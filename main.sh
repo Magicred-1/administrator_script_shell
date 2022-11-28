@@ -22,39 +22,82 @@ read choice
 case $choice in
     # To create a new user account we first check if the user already exists or if the input is empty
     1) echo -e "Enter the username : \c"
-        read username
-        if [ -z $username && $username != " "]; 
-        then
-            echo "Username cannot be empty"
-            exit 0
-        else
-            if [ -d /home/$username ]; 
-            then
-                echo "User already exists"
-                exit 0
-        fi
-        # Folder path for the user, we check if the folder exists or if the input is empty
-        echo -e "Enter the user's folder path : \c"
-        read path
-        if [ -z $path && $path != " "]; 
-        then
-            echo "Path cannot be empty"
-            exit 
-        else
-            if [ -d /home/$path ]; 
-            then
-                echo "Path already exists"
-                exit 0
-        fi
-        # Expiration date for the user, we check if the input is empty
-        #TODO check for date format
-        echo -e "Enter the user's expiration date (YYYY-MM-DD) : \c"
-        read expiration
-        check_expiration_date();
+    read username
 
+    if [ -z $username && $username != " "]; 
+    then
+        echo "Username cannot be empty"
+        exit 0
+    else
+        if [ -d /home/$username ]; 
+        then
+            echo "User already exists"
+            exit 0
+        fi
+    fi
+
+    # Folder path for the user, we check if the folder exists or if the input is empty
+    echo -e "Enter the user's folder path : \c"
+    read path
+    if [ -z $path && $path != " "]; 
+    then
+        echo "Path cannot be empty"
+        exit 
+    else
+        if [ -d /home/$path ]; 
+        then
+            echo "Path already exists"
+            exit 0
+        fi
+    fi
+
+    # Expiration date for the user, we check if the input is empty
+    #TODO check for date format
+    echo -e "Enter the user's expiration date (YYYY-MM-DD) : \c"
+    read expiration
+    # check_expiration_date()
+    if [ -z $expiration && $expiration != " "]; 
+    then
+        echo "Expiration date cannot be empty"
+        exit 0
+    fi
+    
+    echo -e "Enter the user's password : \c"
+    read password
+    if [-z $password && $password != " " && $password < 8]; 
+    then
+        echo "Password cannot be empty and must be at least 8 characters long"
+        exit 0
+    fi
+
+    echo -e "Enter the shell for the user : \c"
+    read shell
+    if [-z $shell && $shell != " "]; 
+    then
+        echo "Shell cannot be empty"
+        exit 0
+    else
+        if [ -d /home/$shell ]; 
+        then
+            continue
+        fi
+        else
+            echo "Shell does not exist or is not installed"
+            exit 0
+        fi
+    fi
+
+    # Create the username of user
+    echo -e "Enter the user's name : \c"
+    read username
+    if [-z $username && $username != " "]; 
+    then
+        echo "Username cannot be empty"
+        exit 0
+    fi;;
         
     # Edit a user
-    2) echo -e "Which user do you want to edit? : \c"
+    2) echo -e "Which existing user do you want to edit? : \c"
         read useredit
         # if user exists
         if [ -d /home/$useredit ]; 
@@ -65,6 +108,7 @@ case $choice in
             echo "3. Expiration date"
             echo -e "Enter your choice : \c"
             read user_choice
+            # choice options
             case $user_choice in 
                 1) echo -e "Enter the new username : \c"
                     read new_username
@@ -77,12 +121,12 @@ case $choice in
                         then
                             echo "User already exists"
                             exit 0
+                        fi
                     fi
                     # Change the username
                     echo "Changing username..."
                     usermod -l $new_username $useredit
-                    echo "Username changed"
-                    ;;
+                    echo "Username changed" ;;
                 2) echo -e "Enter the new path : \c"
                     read new_path
                     if [ -z $new_path && $new_path != " "]; 
@@ -94,6 +138,7 @@ case $choice in
                         then
                             echo "Path already exists"
                             exit 0
+                        fi
                     fi
                     # Change the path
                     echo "Changing path..."
@@ -102,38 +147,24 @@ case $choice in
                     ;;
                 3) echo -e "Enter the new expiration date (YYYY-MM-DD) : \c"
                     read new_expiration
+                    if [ -z $new_expiration && $new_expiration != " "]; 
+                    then
+                        echo "Expiration date cannot be empty"
+                        exit 0
+                    fi
                     # Change the expiration date
                     echo "Changing expiration date..."
                     chage -E $new_expiration $useredit
                     echo "Expiration date changed"
-                    ;;
             esac
         fi
+    ;;
 
     # Erase a user
-    3)
+    3);;
     # Exit
     4) exit ;;
     esac
     echo -e "Press enter to continue ...\c"
     read input
 done
-
-check_expiration_date() {
-    #TODO
-    if [ -z $expiration && $expiration != " "]; 
-        then
-            echo "Expiration date cannot be empty"
-            exit
-        else 
-        if [ $expiration < $(date +%Y-%m-%d) ]; 
-        then
-            echo "Expiration date cannot be in the past"
-            exit 0
-        fi
-    fi
-    
-}
-
-
-
