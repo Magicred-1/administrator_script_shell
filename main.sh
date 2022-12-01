@@ -1,5 +1,5 @@
 #!/bin/sh
-
+trap '' 2
 # Name: Administrator Shell Script
 # Description: This script is used to run the administrator shell script
 # Author: Djason G. (Magicred-1 on Github)
@@ -52,13 +52,12 @@ case $choice in
     fi
 
     # Expiration date for the user, we check if the input is empty
-    #TODO check for date format
+    #TODO: check for date format
     echo -e "Enter the user's expiration date (YYYY-MM-DD) : \c"
     read expiration
-    # check_expiration_date()
-    if [ -z $expiration && $expiration != " "]; 
+    if [ -z $expiration && $expiration != " " && $expiration =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$]; 
     then
-        echo "Expiration date cannot be empty"
+        echo "Expiration date cannot be empty or the format is invalid"
         exit 0
     fi
     
@@ -70,9 +69,9 @@ case $choice in
         exit 0
     fi
 
-    echo -e "Enter the shell for the user : \c"
+    echo -e "Enter the name of the shell for the user : \c"
     read shell
-    if [-z $shell && $shell != " "]; 
+    if [-z $shell && $shell != " "];
     then
         echo "Shell cannot be empty"
         exit 0
@@ -80,21 +79,23 @@ case $choice in
         if [ -d /home/$shell ]; 
         then
             continue
-        fi
         else
-            echo "Shell does not exist or is not installed"
+            echo "Shell does not exist"
             exit 0
         fi
     fi
 
-    # Create the username of user
     echo -e "Enter the user's name : \c"
     read username
     if [-z $username && $username != " "]; 
     then
         echo "Username cannot be empty"
         exit 0
-    fi;;
+    fi
+    # We then create the user
+    useradd -d $path -e $expiration -s $shell -p $password $username
+    echo "User $username created successfully"
+    ;;
         
     # Edit a user
     2) echo -e "Which existing user do you want to edit? : \c"
@@ -147,9 +148,9 @@ case $choice in
                     ;;
                 3) echo -e "Enter the new expiration date (YYYY-MM-DD) : \c"
                     read new_expiration
-                    if [ -z $new_expiration && $new_expiration != " "]; 
+                    if [ -z $new_expiration && $new_expiration != " " && $new_expiration > ${date +%Y-%m-%d}]; 
                     then
-                        echo "Expiration date cannot be empty"
+                        echo "Expiration date cannot be empty and must be greater than today's date"
                         exit 0
                     fi
                     # Change the expiration date
@@ -168,3 +169,4 @@ case $choice in
     echo -e "Press enter to continue ...\c"
     read input
 done
+
