@@ -41,7 +41,7 @@ case $choice in
         fi
 
         # Folder path for the user, we check if the folder exists or if the input is empty
-        echo -n "Enter the user's folder path : "
+        echo -n "Enter the user's folder name (ex: user) : "
         read path
         if [ -z $path ] && [ $path != " " ]; 
         then
@@ -81,7 +81,7 @@ case $choice in
             exit 0
         else
             # check if the shell exists
-            if [ ${command -v $shell} ]
+            if [ $(command -v $shell) ]
             then
                 continue
             else
@@ -93,7 +93,7 @@ case $choice in
                     sudo apt install $shell
                     echo "Shell installed"
 
-                    if [ ${command -v $shell} ]; 
+                    if [ $(command -v $shell) ]; 
                     then
                         echo "Shell installed successfully"
                     else
