@@ -112,10 +112,8 @@ case $choice in
                     sleep 2
                     ;;
                     n) echo "Exiting..."
-                    
                     ;;
                     *) echo "Invalid input"
-                    
                     ;;
                 esac
             fi
@@ -277,7 +275,7 @@ case $choice in
 
             case $erase_choice in
                 #we check if the user is logged in or if the user exist
-                y)  if [ -n $(who | grep q "$user_erase") ] || [ -e /home/"$user_erase" ];
+                y)  if [ -e /home/"$user_erase" ];
                         # ask the user if he wants to delete the user folder
                         then echo "Do you want to delete the user folder ? (y/n) : "
                             read -r folder_choice
