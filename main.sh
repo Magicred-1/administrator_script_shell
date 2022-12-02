@@ -270,10 +270,11 @@ case $choice in
     3) echo "Which existing user do you want to erase ? : "
         read -r user_erase
         # if user exists
-        if [ grep -w '^$user_erase' /etc/passwd ]; 
+        if [ $(getent passwd $user_erase) ];
         then
             echo "Are you sure you want to erase $erase_choice ? (y/n) :"
             read erase_choice
+
             case $erase_choice in
                 #we check if the user is logged in or if the user exist
                 y)  if [ -n $(who | grep q "$user_erase") ] || [ -e /home/"$user_erase" ];
