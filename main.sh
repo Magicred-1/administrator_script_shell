@@ -91,7 +91,7 @@ case $choice in
             then
                 # We then create the user with a encrypted password
                 useradd -d /home/"$path" -s /bin/"$shell" -e "$expiration" -p "$(openssl passwd -1 "$password")" "$username"
-                echo "User $username created successfully"
+                echo "\033[1;32mUser $username created successfully\033[0m"
                 sleep 2
             else
                 echo "Shell does not exist\n"
@@ -104,7 +104,7 @@ case $choice in
 
                     if [ $(command -v "$shell") ]; 
                     then
-                        echo "Shell installed successfully"
+                        echo "\033[1;32mShell installed successfully\033[0m"
                     else
                         echo "Shell installation failed"
                         
@@ -144,12 +144,11 @@ case $choice in
                     read new_username
                     if [ -z "$new_username" ] && [ "$new_username" != " " ]; 
                     then
-                        echo "Username cannot be empty"
-                        
+                        echo "Username cannot be empty."
                     else
                         if [ -d /home/"$new_username" ]; 
                         then
-                            echo "User already exists"
+                            echo "User already exists."
                         fi
                     fi
                     # Change the username
@@ -158,8 +157,8 @@ case $choice in
                     # Change the home directory
                     echo "Changing home directory..."
                     usermod -d /home/"$new_username" "$new_username"
-                    echo "Home directory changed successfully"
-                    echo "Username changed successfully"
+                    echo "\033[1;32mHome directory changed successfully.\033[0m"
+                    echo "\033[1;32mUsername changed successfully.\033[0m"
                     sleep 2
                     ;;
                 2) echo "Enter the new path (ex: 'test' -> /home/test) : "
@@ -264,7 +263,6 @@ case $choice in
             esac
         else
             echo "User does not exist"
-            
         fi
     ;;
 
@@ -272,7 +270,7 @@ case $choice in
     3) echo "Which existing user do you want to erase ? : "
         read -r user_erase
         # if user exists
-        if [ -d /home/"$user_erase" ]; 
+        if [ grep -w '^$user_erase' /etc/passwd ]; 
         then
             echo "Are you sure you want to erase $erase_choice ? (y/n) :"
             read erase_choice
@@ -311,7 +309,7 @@ case $choice in
                     ;;
             esac
         else
-            echo "User $erase_choice does not exist"
+            echo "The user does not exist"
             sleep 2
         fi
     ;;
