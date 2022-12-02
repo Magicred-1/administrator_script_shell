@@ -102,7 +102,6 @@ case $choice in
                         echo "Shell installation failed"
                         exit 0
                     fi
-                fi
                 else
                     echo "Shell installation aborted"
                     exit 0
