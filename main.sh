@@ -21,16 +21,16 @@ read choice
 
 case $choice in
     # To create a new user account we first check if the user already exists or if the input is empty
-    1) echo -n "How many account do you want to be created ? :"
+    1) echo -n "How many account(s) do you want to be created ? : "
     read numberOfAccounts
     for i in $(seq 1 $numberOfAccounts)
     do
         echo -n "Enter the username of the user number $i : "
         read username
 
-        if [ -z $username ] && [ $username == " " ]; 
+        if [ -z $username ] && ! [ $username = " " ] || [ -d /home/$username ]; 
         then
-            echo "Username cannot be empty"
+            echo "Username cannot be empty or the user already exists"
             exit 0
         else
             if [ -d /home/$username ]; 
@@ -80,32 +80,35 @@ case $choice in
             echo "Shell cannot be empty"
             exit 0
         else
-            if [ -d /home/$shell ]; 
+            # check if the shell exists
+            if [ ${command -v $shell} ]
             then
                 continue
             else
                 echo "Shell does not exist\n"
                 echo -n "Do you want to install the shell ? (y/n)"
                 read install
-                if [ $install == "y" ] || [ $install == "Y" ];
-                then
-                    # we install the shell from the content of the 
-                    # shell variable
-                    sudo apt-get install $shell
+                case in $install
+                    y) echo "Installing shell..."
+                    sudo apt install $shell
+                    echo "Shell installed"
 
-                    echo "Installing $shell ..."
-                    sleep 2
-                    if [ -d /home/$shell ]; 
+                    if [ ${command -v $shell} ]; 
                     then
                         echo "Shell installed successfully"
                     else
                         echo "Shell installation failed"
                         exit 0
                     fi
-                else
-                    echo "Shell installation aborted"
+                    sleep 2
+                    ;;
+                    n) echo "Exiting..."
                     exit 0
-                fi
+                    ;;
+                    *) echo "Invalid input"
+                    exit 0
+                    ;;
+                esac
             fi
         fi
 
@@ -116,8 +119,10 @@ case $choice in
             echo "Username cannot be empty"
             exit 0
         fi
-        # We then create the user
-        sudo useradd -d $path -n $expiration -s $shell -p $password $username
+        # We then create the user with a encrypted password
+        encrypted_password = $(openssl passwd -1 $password)
+
+        sudo useradd -d $path -n $expiration -s $shell -p $encrypted_password $username
         echo "User $username created successfully"
         sleep 2
     done;;
@@ -200,7 +205,8 @@ case $choice in
                     fi
                     # Change the password
                     echo "Changing password..."
-                    usermod -p $new_password $useredit
+                    new_encrypted_password = $(openssl passwd -1 $password)
+                    usermod -p $new_encrypted_password $useredit
                     echo "Password changed"
                     sleep 2
                     ;;
@@ -211,7 +217,7 @@ case $choice in
                         echo "Shell cannot be empty."
                         exit 0
                     else
-                        if [ -d /home/$new_shell ]; 
+                        if [ ${command -v $new_shell} ]; 
                         then
                             continue
                         else
@@ -226,7 +232,7 @@ case $choice in
 
                                 echo "Installing $new_shell ..."
                                 sleep 2
-                                if [ -d /home/$new_shell ]; 
+                                if [ ${command -v $new_shell} ]; 
                                 then
                                     echo "Shell installed successfully"
                                 else
@@ -260,6 +266,9 @@ case $choice in
                     exit 0
                     ;;
             esac
+        else
+            echo "User does not exist"
+            exit 0
         fi
     ;;
 
@@ -273,7 +282,7 @@ case $choice in
             read erase_choice
             case $erase_choice in
                 #we check if the user is logged in or if the user exist
-                y)  if [ -z $(who | grep $usererase) ] || [ -e /home/$usererase ];
+                y)  if ! [ -z $(who | grep $usererase) ] || [ -e /home/$usererase ];
                         # ask the user if he wants to delete the user folder
                         then echo "Do you want to delete the user folder ? (y/n) : "
                             read folder_choice
@@ -303,8 +312,13 @@ case $choice in
 
                 n) echo "Cancelling the user deletion .."
                     sleep 2
+                    exit 0
                     ;;
             esac
+        else
+            echo "User does not exist"
+            sleep 2
+            exit 0
         fi
     ;;
     # Exit
