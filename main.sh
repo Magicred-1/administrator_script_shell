@@ -278,7 +278,7 @@ case $choice in
         # if user exists
         if [ -d /home/$usererase ]; 
         then
-            echo "Are you sure you want to erase $usererase ? (y/n) :"
+            echo "Are you sure you want to erase $erase_choice ? (y/n) :"
             read erase_choice
             case $erase_choice in
                 #we check if the user is logged in or if the user exist
