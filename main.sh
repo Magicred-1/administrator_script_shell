@@ -88,7 +88,7 @@ case $choice in
                 echo "Shell does not exist\n"
                 echo -n "Do you want to install the shell ? (y/n)"
                 read install
-                case in $install
+                case $install in
                     y) echo "Installing shell..."
                     sudo apt install $shell
                     echo "Shell installed"
