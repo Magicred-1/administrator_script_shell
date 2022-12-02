@@ -90,7 +90,7 @@ case $choice in
             if [ $(command -v "$shell") ]
             then
                 # We then create the user with a encrypted password
-                useradd -d /home/"$path" -s /bin/"$shell" -e "$expiration" -p "$(openssl passwd -1 "$password")" "$username"
+                useradd -d /home/"$path" -s /bin/"$shell" -e "$expiration" -p "$(openssl passwd -6 '$password')" "$username"
                 echo "\033[1;32mUser $username created successfully\033[0m"
                 sleep 2
             else
@@ -268,14 +268,14 @@ case $choice in
     3) echo "Which existing user do you want to erase ? : "
         read -r user_erase
         # if user exists
-        if [ $(getent passwd $user_erase) ];
+        if [ -d /home/"$user_erase" ];
         then
             echo "Are you sure you want to erase $erase_choice ? (y/n) :"
             read erase_choice
 
             case $erase_choice in
                 #we check if the user is logged in or if the user exist
-                y)  if [ -e /home/"$user_erase" ];
+                y)  if ! [ $(who | grep q "$user_erase") ] || [ -d /home/"$user_erase" ];
                         # ask the user if he wants to delete the user folder
                         then echo "Do you want to delete the user folder ? (y/n) : "
                             read -r folder_choice
