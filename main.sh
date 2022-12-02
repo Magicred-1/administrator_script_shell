@@ -28,7 +28,7 @@ case $choice in
         echo -n "Enter the username of the user number $i : "
         read username
 
-        if [[ -z $username && $username == " " ]]; 
+        if [ -z $username ] && [ $username == " " ]; 
         then
             echo "Username cannot be empty"
             exit 0
