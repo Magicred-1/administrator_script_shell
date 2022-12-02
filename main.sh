@@ -41,7 +41,7 @@ case $choice in
         fi
 
         # Folder path for the user, we check if the folder exists or if the input is empty
-        echo -n "Enter the user's folder name (ex: user) : "
+        echo -n "Enter the user's folder name (ex: user -> /home/user) : "
         read path
         if [ -z $path ] && [ $path != " " ]; 
         then
@@ -66,7 +66,7 @@ case $choice in
         fi
         
         echo -n "Enter the user's password : "
-        read password
+        read -s password
         if [ -z $password  ] && [ $password != " " ] && [ ${#password} < 8 ]; 
         then
             echo "Password cannot be empty and must be at least 8 characters long"
@@ -83,7 +83,19 @@ case $choice in
             # check if the shell exists
             if [ $(command -v $shell) ]
             then
-                continue
+                echo -n "Enter the username : "
+                read username
+                if [ -z $username ] && [ $username != " " ]; 
+                then
+                    echo "Username cannot be empty"
+                    exit 0
+                fi
+                # We then create the user with a encrypted password
+                encrypted_password = $(openssl passwd -1 $password)
+
+                sudo useradd -d $path -n $expiration -s $shell -p $encrypted_password $username
+                echo "User $username created successfully"
+                sleep 2
             else
                 echo "Shell does not exist\n"
                 echo -n "Do you want to install the shell ? (y/n)"
@@ -111,20 +123,6 @@ case $choice in
                 esac
             fi
         fi
-
-        echo -n "Enter the username : "
-        read username
-        if [ -z $username ] && [ $username != " " ]; 
-        then
-            echo "Username cannot be empty"
-            exit 0
-        fi
-        # We then create the user with a encrypted password
-        encrypted_password = $(openssl passwd -1 $password)
-
-        sudo useradd -d $path -n $expiration -s $shell -p $encrypted_password $username
-        echo "User $username created successfully"
-        sleep 2
     done;;
 
     # Edit a user
@@ -197,7 +195,7 @@ case $choice in
                     sleep 2
                     ;;
                 4) echo -n "Enter the new password : "
-                    read new_password
+                    read -s -new_password
                     if [ -z $new_password ] && [ $new_password != " " ] && [ ${#new_password} < 8 ]; 
                     then
                         echo "Password cannot be empty and must be at least 8 characters long"
