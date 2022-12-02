@@ -5,6 +5,10 @@ trap '' 2
 # Author: Djason G. (Magicred-1 on Github)
 while true
 do
+if [ "$EUID" -ne 0 ]
+  then echo "Please run as root"
+  exit
+fi
 clear
 echo "=========================================="
 echo "\033[31m Welcome to Administrator's Shell \033[0m"
