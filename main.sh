@@ -31,12 +31,12 @@ case $choice in
         if [ -z "$username" ] && ! [ "$username" = " " ] || [ -d /home/"$username" ]; 
         then
             echo "Username cannot be empty or the user already exists"
-            exit 0
+            
         else
             if [ -d /home/"$username" ]; 
             then
                 echo "User already exists"
-                exit 0
+                
             fi
         fi
 
@@ -51,7 +51,7 @@ case $choice in
             if [ -d /home/"$path" ]; 
             then
                 echo "Path already exists"
-                exit 0
+                
             fi
         fi
 
@@ -62,7 +62,7 @@ case $choice in
         if [ -z "$expiration" ] && [ "$expiration" != " " ] && [ echo "$expiration" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' ]; 
         then
             echo "Expiration date cannot be empty or the format is invalid"
-            exit 0
+            
         fi
         
         echo "Enter the user's password : "
@@ -72,7 +72,7 @@ case $choice in
         if [ -z "$password"  ] && [ "$password" != " " ] && [ ${#password} -lt 8 ]; 
         then
             echo "Password cannot be empty and must be at least 8 characters long"
-            exit 0
+            
         fi
 
         echo "Enter the name of the shell for the user : "
@@ -80,7 +80,7 @@ case $choice in
         if [ -z "$shell" ] && [ "$shell" != " " ];
         then
             echo "Shell cannot be empty"
-            exit 0
+            
         else
             # check if the shell exists
             if [ $(command -v "$shell") ]
@@ -90,12 +90,12 @@ case $choice in
                 if [ -z "$username" ] && [ "$username" != " " ]; 
                 then
                     echo "Username cannot be empty"
-                    exit 0
+                    
                 fi
                 # We then create the user with a encrypted password
                 encrypted_password = $(openssl passwd -1 "$password")
 
-                sudo useradd -d "$path" -n "$expiration" -s "$shell" -p "$encrypted_password" "$username"
+                sudo useradd -d "$path" -n "$expiration" -s "/home/$shell" -p "$encrypted_password" "$username"
                 echo "User $username created successfully"
                 sleep 2
             else
@@ -112,15 +112,15 @@ case $choice in
                         echo "Shell installed successfully"
                     else
                         echo "Shell installation failed"
-                        exit 0
+                        
                     fi
                     sleep 2
                     ;;
                     n) echo "Exiting..."
-                    exit 0
+                    
                     ;;
                     *) echo "Invalid input"
-                    exit 0
+                    
                     ;;
                 esac
             fi
@@ -150,12 +150,12 @@ case $choice in
                     if [ -z "$new_username" ] && [ "$new_username" != " " ]; 
                     then
                         echo "Username cannot be empty"
-                        exit 0
+                        
                     else
                         if [ -d /home/"$new_username" ]; 
                         then
                             echo "User already exists"
-                            exit 0
+                            
                         fi
                     fi
                     # Change the username
@@ -169,12 +169,12 @@ case $choice in
                     if [ -z "$new_path" ] && [ "$new_path" != " " ]; 
                     then
                         echo "Path cannot be empty"
-                        exit 0
+                        
                     else
                         if [ -d /home/"$new_path" ]; 
                         then
                             echo "Path already exists"
-                            exit 0
+                            
                         fi
                     fi
                     # Change the path
@@ -188,7 +188,7 @@ case $choice in
                     if [ -z "$new_expiration" ] && [ "$new_expiration" != " " ] &&  [ "$new_expiration" > "${date +%Y-%m-%d}" ]; 
                     then
                         echo "Expiration date cannot be empty and must be greater than today's date"
-                        exit 0
+                        
                     fi
                     # Change the expiration date
                     echo "Changing expiration date..."
@@ -203,7 +203,7 @@ case $choice in
                     if [ -z "$new_password" ] && [ "$new_password" != " " ] && [ ${#new_password} -lt 8 ]; 
                     then
                         echo "Password cannot be empty and must be at least 8 characters long"
-                        exit 0
+                        
                     fi
                     # Change the password
                     echo "Changing password..."
@@ -217,7 +217,7 @@ case $choice in
                     if [ -z "$new_shell" ] && [ "$new_shell" != " " ]; 
                     then
                         echo "Shell cannot be empty."
-                        exit 0
+                        
                     else
                         if [ "${command -v $new_shell}" ]; 
                         then
@@ -239,7 +239,7 @@ case $choice in
                                     echo "Shell installed successfully"
                                 else
                                     echo "Shell installation failed"
-                                    exit 0
+                                    
                                 fi
                             fi
                         fi
@@ -255,7 +255,7 @@ case $choice in
                     if [ -z "$new_userID" ] && [ "$new_userID" != " " ]; 
                     then
                         echo "userID cannot be empty"
-                        exit 0
+                        
                     fi
                     # Change the userID
                     echo "Changing userID..."
@@ -265,12 +265,12 @@ case $choice in
                     ;;
                 7) echo "Returning to the main menu..."
                     sleep 2
-                    exit 0
+                    
                     ;;
             esac
         else
             echo "User does not exist"
-            exit 0
+            
         fi
     ;;
 
@@ -314,13 +314,13 @@ case $choice in
 
                 n) echo "Cancelling the user deletion .."
                     sleep 2
-                    exit 0
+                    
                     ;;
             esac
         else
             echo "User does not exist"
             sleep 2
-            exit 0
+            
         fi
     ;;
     # Exit
