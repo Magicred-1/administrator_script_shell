@@ -6,25 +6,25 @@ trap '' 2
 while true
 do
 clear
-echo "================================"
-echo "\033[31m Welcome to Administrator's Shell 0000\033[0m"
+echo "=========================================="
+echo "\033[31m Welcome to Administrator's Shell \033[0m"
 echo "\tBy : Djason G. circa 2022"
-echo "================================"
+echo "=========================================="
 echo "Please enter the option number\nyou want to choose : "
 echo "1. Create a new user"
 echo "2. Edit a user"
 echo "3. Erase a user"
 echo "4. Exit"
-echo -e "\n"
-echo -e "Enter your choice : \c"
+echo "\n"
+echo -n "Enter your choice : "
 read choice
 
 case $choice in
     # To create a new user account we first check if the user already exists or if the input is empty
-    1) echo -e "Enter the username : \c"
+    1) echo -n "Enter the username : "
     read username
 
-    if [ -z $username && $username != " "]; 
+    if [[ -z $username && $username == " " ]]; 
     then
         echo "Username cannot be empty"
         exit 0
@@ -37,9 +37,9 @@ case $choice in
     fi
 
     # Folder path for the user, we check if the folder exists or if the input is empty
-    echo -e "Enter the user's folder path : \c"
+    echo -n "Enter the user's folder path : "
     read path
-    if [ -z $path && $path != " "]; 
+    if [[ -z $path && $path != " " ]]; 
     then
         echo "Path cannot be empty"
         exit 
@@ -53,25 +53,25 @@ case $choice in
 
     # Expiration date for the user, we check if the input is empty
     #TODO: check for date format
-    echo -e "Enter the user's expiration date (YYYY-MM-DD) : \c"
+    echo -n "Enter the user's expiration date (YYYY-MM-DD) : "
     read expiration
-    if [ -z $expiration && $expiration != " " && $expiration =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$]; 
+    if [[ -z $expiration && $expiration != " " && $expiration =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; 
     then
         echo "Expiration date cannot be empty or the format is invalid"
         exit 0
     fi
     
-    echo -e "Enter the user's password : \c"
+    echo -n "Enter the user's password : "
     read password
-    if [-z $password && $password != " " && $password < 8]; 
+    if [[-z $password && $password != " " && $password < 8]]; 
     then
         echo "Password cannot be empty and must be at least 8 characters long"
         exit 0
     fi
 
-    echo -e "Enter the name of the shell for the user : \c"
+    echo -n "Enter the name of the shell for the user : "
     read shell
-    if [-z $shell && $shell != " "];
+    if [[-z $shell && $shell != " "]];
     then
         echo "Shell cannot be empty"
         exit 0
@@ -85,20 +85,20 @@ case $choice in
         fi
     fi
 
-    echo -e "Enter the user's name : \c"
+    echo -n "Enter the user's name : "
     read username
-    if [-z $username && $username != " "]; 
+    if [[ -z $username && $username != " " ]]; 
     then
         echo "Username cannot be empty"
         exit 0
     fi
     # We then create the user
-    useradd -d $path -e $expiration -s $shell -p $password $username
+    useradd -d $path -n $expiration -s $shell -p $password $username
     echo "User $username created successfully"
     ;;
         
     # Edit a user
-    2) echo -e "Which existing user do you want to edit? : \c"
+    2) echo -n "Which existing user do you want to edit ? : "
         read useredit
         # if user exists
         if [ -d /home/$useredit ]; 
@@ -107,13 +107,13 @@ case $choice in
             echo "1. Username"
             echo "2. Path"
             echo "3. Expiration date"
-            echo -e "Enter your choice : \c"
+            echo -n "Enter your choice : "
             read user_choice
             # choice options
             case $user_choice in 
-                1) echo -e "Enter the new username : \c"
+                1) echo -n "Enter the new username : "
                     read new_username
-                    if [ -z $new_username && $new_username != " "]; 
+                    if [[ -z $new_username && $new_username != " " ]]; 
                     then
                         echo "Username cannot be empty"
                         exit 0
@@ -128,9 +128,9 @@ case $choice in
                     echo "Changing username..."
                     usermod -l $new_username $useredit
                     echo "Username changed" ;;
-                2) echo -e "Enter the new path : \c"
+                2) echo -n "Enter the new path : "
                     read new_path
-                    if [ -z $new_path && $new_path != " "]; 
+                    if [[ -z $new_path && $new_path != " " ]]; 
                     then
                         echo "Path cannot be empty"
                         exit 0
@@ -146,16 +146,16 @@ case $choice in
                     usermod -d $new_path $useredit
                     echo "Path changed"
                     ;;
-                3) echo -e "Enter the new expiration date (YYYY-MM-DD) : \c"
+                3) echo -n "Enter the new expiration date (YYYY-MM-DD) : "
                     read new_expiration
-                    if [ -z $new_expiration && $new_expiration != " " && $new_expiration > ${date +%Y-%m-%d}]; 
+                    if [[ -z $new_expiration && $new_expiration != " " && $new_expiration > ${date +%Y-%m-%d}]]; 
                     then
                         echo "Expiration date cannot be empty and must be greater than today's date"
                         exit 0
                     fi
                     # Change the expiration date
                     echo "Changing expiration date..."
-                    chage -E $new_expiration $useredit
+                    chage -n $new_expiration $useredit
                     echo "Expiration date changed"
             esac
         fi
@@ -166,7 +166,7 @@ case $choice in
     # Exit
     4) exit ;;
     esac
-    echo -e "Press enter to continue ...\c"
+    echo -n "Press enter to continue ..."
     read input
 done
 
