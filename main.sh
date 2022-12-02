@@ -43,7 +43,7 @@ case $choice in
         # Folder path for the user, we check if the folder exists or if the input is empty
         echo -n "Enter the user's folder path : "
         read path
-        if [[ -z $path && $path != " " ]]; 
+        if [ -z $path ] && [ $path != " " ]; 
         then
             echo "Path cannot be empty"
             exit 
@@ -59,7 +59,7 @@ case $choice in
         #TODO: check for date format
         echo -n "Enter the user's expiration date (YYYY-MM-DD) : "
         read expiration
-        if [[ -z $expiration && $expiration != " " && $expiration =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; 
+        if [ -z $expiration ] && [ $expiration != " " ] && [ $expiration =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]; 
         then
             echo "Expiration date cannot be empty or the format is invalid"
             exit 0
@@ -67,7 +67,7 @@ case $choice in
         
         echo -n "Enter the user's password : "
         read password
-        if [[ -z $password && $password != " " && ${#password} < 8 ]]; 
+        if [ -z $password  ] && [ $password != " " ] && [ ${#password} < 8 ]; 
         then
             echo "Password cannot be empty and must be at least 8 characters long"
             exit 0
@@ -75,7 +75,7 @@ case $choice in
 
         echo -n "Enter the name of the shell for the user : "
         read shell
-        if [[ -z $shell && $shell != " " ]];
+        if [ -z $shell ] && [ $shell != " " ];
         then
             echo "Shell cannot be empty"
             exit 0
@@ -87,7 +87,7 @@ case $choice in
                 echo "Shell does not exist\n"
                 echo -n "Do you want to install the shell ? (y/n)"
                 read install
-                if [[ $install == "y" || $install == "Y" ]];
+                if [ $install == "y" ] || [ $install == "Y" ];
                 then
                     # we install the shell from the content of the 
                     # shell variable
@@ -103,12 +103,16 @@ case $choice in
                         exit 0
                     fi
                 fi
+                else
+                    echo "Shell installation aborted"
+                    exit 0
+                fi
             fi
         fi
 
         echo -n "Enter the username : "
         read username
-        if [[ -z $username && $username != " " ]]; 
+        if [ -z $username ] && [ $username != " " ]; 
         then
             echo "Username cannot be empty"
             exit 0
@@ -139,7 +143,7 @@ case $choice in
             case $user_choice in 
                 1) echo -n "Enter the new username : "
                     read new_username
-                    if [[ -z $new_username && $new_username != " " ]]; 
+                    if [ -z $new_username ] && [ $new_username != " " ]; 
                     then
                         echo "Username cannot be empty"
                         exit 0
@@ -158,7 +162,7 @@ case $choice in
                     ;;
                 2) echo -n "Enter the new path : "
                     read new_path
-                    if [[ -z $new_path && $new_path != " " ]]; 
+                    if [ -z $new_path ] && [ $new_path != " " ]; 
                     then
                         echo "Path cannot be empty"
                         exit 0
@@ -177,7 +181,7 @@ case $choice in
                     ;;
                 3) echo -n "Enter the new expiration date (YYYY-MM-DD) : "
                     read new_expiration
-                    if [[ -z $new_expiration && $new_expiration != " " && $new_expiration > ${date +%Y-%m-%d}]]; 
+                    if [ -z $new_expiration ] && [ $new_expiration != " " ] &&  [ $new_expiration > ${date +%Y-%m-%d} ]; 
                     then
                         echo "Expiration date cannot be empty and must be greater than today's date"
                         exit 0
@@ -190,7 +194,7 @@ case $choice in
                     ;;
                 4) echo -n "Enter the new password : "
                     read new_password
-                    if [[ -z $new_password && $new_password != " " && ${#new_password} < 8 ]]; 
+                    if [ -z $new_password ] && [ $new_password != " " ] && [ ${#new_password} < 8 ]; 
                     then
                         echo "Password cannot be empty and must be at least 8 characters long"
                         exit 0
@@ -203,9 +207,9 @@ case $choice in
                     ;;
                 5) echo -n "Enter the new shell : "
                     read new_shell
-                    if [[ -z $new_shell && $new_shell != " " ]]; 
+                    if [ -z $new_shell ] && [ $new_shell != " " ]; 
                     then
-                        echo "Shell cannot be empty"
+                        echo "Shell cannot be empty."
                         exit 0
                     else
                         if [ -d /home/$new_shell ]; 
@@ -213,9 +217,9 @@ case $choice in
                             continue
                         else
                             echo "Shell does not exist\n"
-                            echo -n "Do you want to install the shell ? (y/n)"
+                            echo -n "Do you want to install the shell ? (y/n) : "
                             read install
-                            if [[ $install == "y" || $install == "Y" ]];
+                            if [ $install == "y" ] || [ $install == "Y" ];
                             then
                                 # we install the shell from the content of the 
                                 # shell variable
@@ -241,7 +245,7 @@ case $choice in
                     ;;
                 6) echo -n "Enter the new userID : "
                     read new_userID
-                    if [[ -z $new_userID && $new_userID != " " ]]; 
+                    if [ -z $new_userID ] && [ $new_userID != " " ]; 
                     then
                         echo "userID cannot be empty"
                         exit 0
@@ -266,13 +270,13 @@ case $choice in
         # if user exists
         if [ -d /home/$usererase ]; 
         then
-            echo "Are you sure you want to erase $usererase ? (y/n)"
+            echo "Are you sure you want to erase $usererase ? (y/n) :"
             read erase_choice
             case $erase_choice in
                 #we check if the user is logged in or if the user exist
-                y)  if [[ -z $(who | grep $usererase) || -e /home/$usererase ]];
+                y)  if [ -z $(who | grep $usererase) ] || [ -e /home/$usererase ];
                         # ask the user if he wants to delete the user folder
-                        then echo "Do you want to delete the user folder ? (y/n)"
+                        then echo "Do you want to delete the user folder ? (y/n) : "
                             read folder_choice
                             case $folder_choice in
                                 y) echo "Deleting $erase_folder folder..."
