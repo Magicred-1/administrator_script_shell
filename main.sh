@@ -79,7 +79,7 @@ case $choice in
             
         fi
 
-        echo "Enter the name of the shell for the user : "
+        echo "Enter the name of the shell for the user (ex: 'sh' for shell or 'bash' for bash ) : "
         read -r shell
         if [ -z "$shell" ] && [ "$shell" != " " ];
         then
@@ -89,15 +89,8 @@ case $choice in
             # check if the shell exists
             if [ $(command -v "$shell") ]
             then
-                echo "Enter the username : "
-                read username
-                if [ -z "$username" ] && [ "$username" != " " ]; 
-                then
-                    echo "Username cannot be empty"
-                    
-                fi
                 # We then create the user with a encrypted password
-                useradd -d /home/"$path" -s "$shell" -e "$expiration" -p "$(openssl passwd -1 "$password")" "$username"
+                useradd -d /home/"$path" -s /bin/"$shell" -e "$expiration" -p "$(openssl passwd -1 "$password")" "$username"
                 echo "User $username created successfully"
                 sleep 2
             else
@@ -157,16 +150,19 @@ case $choice in
                         if [ -d /home/"$new_username" ]; 
                         then
                             echo "User already exists"
-                            
                         fi
                     fi
                     # Change the username
                     echo "Changing username..."
                     usermod -l "$new_username" "$useredit"
-                    echo "Username changed"
+                    # Change the home directory
+                    echo "Changing home directory..."
+                    usermod -d /home/"$new_username" "$new_username"
+                    echo "Home directory changed successfully"
+                    echo "Username changed successfully"
                     sleep 2
                     ;;
-                2) echo "Enter the new path : "
+                2) echo "Enter the new path (ex: 'test' -> /home/test) : "
                     read new_path
                     if [ -z "$new_path" ] && [ "$new_path" != " " ]; 
                     then
@@ -176,7 +172,6 @@ case $choice in
                         if [ -d /home/"$new_path" ]; 
                         then
                             echo "Path already exists"
-                            
                         fi
                     fi
                     # Change the path
@@ -209,12 +204,11 @@ case $choice in
                     fi
                     # Change the password
                     echo "Changing password..."
-                    new_encrypted_password=$(openssl passwd -1 "$password")
-                    usermod -p "$new_encrypted_password" "$useredit"
+                    usermod -p "$(openssl passwd -1 "$password")" "$useredit"
                     echo "Password changed"
                     sleep 2
                     ;;
-                5) echo -r "Enter the new shell : "
+                5) echo -r "Enter the new shell (ex: 'sh' for shell or 'bash' for bash ) : "
                     read new_shell
                     if [ -z "$new_shell" ] && [ "$new_shell" != " " ]; 
                     then
@@ -241,18 +235,17 @@ case $choice in
                                     echo "Shell installed successfully"
                                 else
                                     echo "Shell installation failed"
-                                    
                                 fi
                             fi
                         fi
                     fi
                     # Change the shell
                     echo "Changing shell..."
-                    usermod -s "$new_shell" "$useredit"
+                    usermod -s "/bin/$new_shell" "$useredit"
                     echo "Shell changed"
                     sleep 2
                     ;;
-                6) echo "Enter the new userID : "
+                6) echo "Enter the new userID (ex -> 285) : "
                     read new_userID
                     if [ -z "$new_userID" ] && [ "$new_userID" != " " ]; 
                     then
@@ -267,7 +260,6 @@ case $choice in
                     ;;
                 7) echo "Returning to the main menu..."
                     sleep 2
-                    
                     ;;
             esac
         else
@@ -305,24 +297,22 @@ case $choice in
                             userdel -r "$user_erase"
                             echo "User deleted"
                             sleep 2
-                        else echo "$erase_choice is logged in"
-                            # we force delete the user if he is logged in
-                            echo "Force deleting $erase_choice ..."
-                            userdel -r -f "$user_erase"
-                            echo "User deleted"
-                            sleep 2
+                    else echo "$erase_choice is logged in"
+                        # we force delete the user if he is logged in
+                        echo "Force deleting $erase_choice ..."
+                        userdel -r -f "$user_erase"
+                        echo "User deleted"
+                        sleep 2
                     fi
                     ;;
 
-                n) echo "Cancelling the user deletion .."
+                n) echo "Cancelling the $erase_choice deletion .."
                     sleep 2
-                    
                     ;;
             esac
         else
-            echo "User does not exist"
+            echo "User $erase_choice does not exist"
             sleep 2
-            
         fi
     ;;
     # Exit
