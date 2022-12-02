@@ -6,7 +6,7 @@ trap '' 2
 while true
 do
 if [ "$(id -u)" -ne 0 ]; then
-    echo 'This script must be run by root' >&2
+    echo '\e[1;31m This script must be run with root privileges.\033[0m' >&2
     exit 1
 fi
 clear
@@ -97,9 +97,7 @@ case $choice in
                     
                 fi
                 # We then create the user with a encrypted password
-                encrypted_password=$(openssl passwd -1 "$password")
-
-                sudo useradd -d "$path" -n "$expiration" -s "/home/$shell" -p "$encrypted_password" "$username"
+                useradd -d /home/"$path" -s "$shell" -e "$expiration" -p "$(openssl passwd -1 "$password")" "$username"
                 echo "User $username created successfully"
                 sleep 2
             else
