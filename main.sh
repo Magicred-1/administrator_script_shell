@@ -21,80 +21,85 @@ read choice
 
 case $choice in
     # To create a new user account we first check if the user already exists or if the input is empty
-    1) echo -n "Enter the username : "
-    read username
+    1) echo -n "How many account do you want to created ? :"
+    read numberOfAccounts
+    for ((i=1; i <= $numberOfAccounts; i++))
+    do
+        echo -n "Enter the username of the user number $i : "
+        read username
 
-    if [[ -z $username && $username == " " ]]; 
-    then
-        echo "Username cannot be empty"
-        exit 0
-    else
-        if [ -d /home/$username ]; 
+        if [[ -z $username && $username == " " ]]; 
         then
-            echo "User already exists"
+            echo "Username cannot be empty"
             exit 0
-        fi
-    fi
-
-    # Folder path for the user, we check if the folder exists or if the input is empty
-    echo -n "Enter the user's folder path : "
-    read path
-    if [[ -z $path && $path != " " ]]; 
-    then
-        echo "Path cannot be empty"
-        exit 
-    else
-        if [ -d /home/$path ]; 
-        then
-            echo "Path already exists"
-            exit 0
-        fi
-    fi
-
-    # Expiration date for the user, we check if the input is empty
-    #TODO: check for date format
-    echo -n "Enter the user's expiration date (YYYY-MM-DD) : "
-    read expiration
-    if [[ -z $expiration && $expiration != " " && $expiration =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; 
-    then
-        echo "Expiration date cannot be empty or the format is invalid"
-        exit 0
-    fi
-    
-    echo -n "Enter the user's password : "
-    read password
-    if [[-z $password && $password != " " && $password < 8]]; 
-    then
-        echo "Password cannot be empty and must be at least 8 characters long"
-        exit 0
-    fi
-
-    echo -n "Enter the name of the shell for the user : "
-    read shell
-    if [[-z $shell && $shell != " "]];
-    then
-        echo "Shell cannot be empty"
-        exit 0
-    else
-        if [ -d /home/$shell ]; 
-        then
-            continue
         else
-            echo "Shell does not exist"
+            if [ -d /home/$username ]; 
+            then
+                echo "User already exists"
+                exit 0
+            fi
+        fi
+
+        # Folder path for the user, we check if the folder exists or if the input is empty
+        echo -n "Enter the user's folder path : "
+        read path
+        if [[ -z $path && $path != " " ]]; 
+        then
+            echo "Path cannot be empty"
+            exit 
+        else
+            if [ -d /home/$path ]; 
+            then
+                echo "Path already exists"
+                exit 0
+            fi
+        fi
+
+        # Expiration date for the user, we check if the input is empty
+        #TODO: check for date format
+        echo -n "Enter the user's expiration date (YYYY-MM-DD) : "
+        read expiration
+        if [[ -z $expiration && $expiration != " " && $expiration =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; 
+        then
+            echo "Expiration date cannot be empty or the format is invalid"
             exit 0
         fi
-    fi
+        
+        echo -n "Enter the user's password : "
+        read password
+        if [[-z $password && $password != " " && $password < 8]]; 
+        then
+            echo "Password cannot be empty and must be at least 8 characters long"
+            exit 0
+        fi
 
-    echo -n "Enter the user's name : "
-    read username
-    if [[ -z $username && $username != " " ]]; 
-    then
-        echo "Username cannot be empty"
-        exit 0
-    fi
-    # We then create the user
-    useradd -d $path -n $expiration -s $shell -p $password $username
-    echo "User $username created successfully"
+        echo -n "Enter the name of the shell for the user : "
+        read shell
+        if [[-z $shell && $shell != " "]];
+        then
+            echo "Shell cannot be empty"
+            exit 0
+        else
+            if [ -d /home/$shell ]; 
+            then
+                continue
+            else
+                echo "Shell does not exist"
+                exit 0
+            fi
+        fi
+
+        echo -n "Enter the user's name : "
+        read username
+        if [[ -z $username && $username != " " ]]; 
+        then
+            echo "Username cannot be empty"
+            exit 0
+        fi
+        # We then create the user
+        useradd -d $path -n $expiration -s $shell -p $password $username
+        echo "User $username created successfully"
+    done
     ;;
         
     # Edit a user
@@ -162,7 +167,23 @@ case $choice in
     ;;
 
     # Erase a user
-    3);;
+    3) echo -n "Which existing user do you want to erase ? : "
+        read usererase
+        # if user exists
+        if [ -d /home/$usererase ]; 
+        then
+            echo "Are you sure you want to erase $usererase ? (y/n)"
+            read erase_choice
+            case $erase_choice in
+                y) echo "Erasing user..."
+                    userdel -r $usererase
+                    echo "User erased"
+                    ;;
+                n) echo "User not erased"
+                    ;;
+            esac
+        fi
+    ;;
     # Exit
     4) exit ;;
     esac
