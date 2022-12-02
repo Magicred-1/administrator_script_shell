@@ -16,24 +16,24 @@ echo "2. Edit a user"
 echo "3. Erase a user"
 echo "4. Exit"
 echo "\n"
-echo -n "Enter your choice : "
+echo "Enter your choice : "
 read choice
 
 case $choice in
     # To create a new user account we first check if the user already exists or if the input is empty
-    1) echo -n "How many account(s) do you want to be created ? : "
+    1) echo "How many account(s) do you want to be created ? : "
     read numberOfAccounts
-    for i in $(seq 1 $numberOfAccounts)
+    for i in $(seq 1 "$numberOfAccounts")
     do
-        echo -n "Enter the username of the user number $i : "
+        echo "Enter the username of the user number $i : "
         read username
 
-        if [ -z $username ] && ! [ $username = " " ] || [ -d /home/$username ]; 
+        if [ -z "$username" ] && ! [ "$username" = " " ] || [ -d /home/"$username" ]; 
         then
             echo "Username cannot be empty or the user already exists"
             exit 0
         else
-            if [ -d /home/$username ]; 
+            if [ -d /home/"$username" ]; 
             then
                 echo "User already exists"
                 exit 0
@@ -41,14 +41,14 @@ case $choice in
         fi
 
         # Folder path for the user, we check if the folder exists or if the input is empty
-        echo -n "Enter the user's folder name (ex: user -> /home/user) : "
+        echo "Enter the user's folder name (ex: user -> /home/user) : "
         read path
-        if [ -z $path ] && [ $path != " " ]; 
+        if [ -z "$path" ] && [ "$path" != " " ]; 
         then
             echo "Path cannot be empty"
             exit 
         else
-            if [ -d /home/$path ]; 
+            if [ -d /home/"$path" ]; 
             then
                 echo "Path already exists"
                 exit 0
@@ -57,55 +57,57 @@ case $choice in
 
         # Expiration date for the user, we check if the input is empty
         #TODO: check for date format
-        echo -n "Enter the user's expiration date (YYYY-MM-DD) : "
-        read expiration
-        if [ -z $expiration ] && [ $expiration != " " ] && [ $expiration =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]; 
+        echo "Enter the user's expiration date (YYYY-MM-DD) : "
+        read -r expiration
+        if [ -z "$expiration" ] && [ "$expiration" != " " ] && [ echo "$expiration" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' ]; 
         then
             echo "Expiration date cannot be empty or the format is invalid"
             exit 0
         fi
         
-        echo -n "Enter the user's password : "
-        read -s password
-        if [ -z $password  ] && [ $password != " " ] && [ ${#password} < 8 ]; 
+        echo "Enter the user's password : "
+        ssty -echo
+        read -r password
+        ssty echo
+        if [ -z "$password"  ] && [ "$password" != " " ] && [ ${#password} -lt 8 ]; 
         then
             echo "Password cannot be empty and must be at least 8 characters long"
             exit 0
         fi
 
-        echo -n "Enter the name of the shell for the user : "
-        read shell
-        if [ -z $shell ] && [ $shell != " " ];
+        echo "Enter the name of the shell for the user : "
+        read -r shell
+        if [ -z "$shell" ] && [ "$shell" != " " ];
         then
             echo "Shell cannot be empty"
             exit 0
         else
             # check if the shell exists
-            if [ $(command -v $shell) ]
+            if [ $(command -v "$shell") ]
             then
-                echo -n "Enter the username : "
+                echo "Enter the username : "
                 read username
-                if [ -z $username ] && [ $username != " " ]; 
+                if [ -z "$username" ] && [ "$username" != " " ]; 
                 then
                     echo "Username cannot be empty"
                     exit 0
                 fi
                 # We then create the user with a encrypted password
-                encrypted_password = $(openssl passwd -1 $password)
+                encrypted_password = $(openssl passwd -1 "$password")
 
-                sudo useradd -d $path -n $expiration -s $shell -p $encrypted_password $username
+                sudo useradd -d "$path" -n "$expiration" -s "$shell" -p "$encrypted_password" "$username"
                 echo "User $username created successfully"
                 sleep 2
             else
                 echo "Shell does not exist\n"
-                echo -n "Do you want to install the shell ? (y/n)"
+                echo "Do you want to install the shell ? (y/n)"
                 read install
                 case $install in
                     y) echo "Installing shell..."
-                    sudo apt install $shell
+                    sudo apt install "$shell"
                     echo "Shell installed"
 
-                    if [ $(command -v $shell) ]; 
+                    if [ $(command -v "$shell") ]; 
                     then
                         echo "Shell installed successfully"
                     else
@@ -126,10 +128,10 @@ case $choice in
     done;;
 
     # Edit a user
-    2) echo -n "Which existing user do you want to edit ? : "
+    2) echo "Which existing user do you want to edit ? : "
         read useredit
         # if user exists
-        if [ -d /home/$useredit ]; 
+        if [ -d /home/"$useredit" ]; 
         then
             echo "What do you want to edit ?"
             echo "1. Username"
@@ -139,18 +141,18 @@ case $choice in
             echo "5. Shell"
             echo "6. userID"
             echo "7. Get back to the main menu"
-            echo -n "Enter your choice : "
+            echo "Enter your choice : "
             read user_choice
             # choice options
             case $user_choice in 
-                1) echo -n "Enter the new username : "
+                1) echo "Enter the new username : "
                     read new_username
-                    if [ -z $new_username ] && [ $new_username != " " ]; 
+                    if [ -z "$new_username" ] && [ "$new_username" != " " ]; 
                     then
                         echo "Username cannot be empty"
                         exit 0
                     else
-                        if [ -d /home/$new_username ]; 
+                        if [ -d /home/"$new_username" ]; 
                         then
                             echo "User already exists"
                             exit 0
@@ -158,18 +160,18 @@ case $choice in
                     fi
                     # Change the username
                     echo "Changing username..."
-                    usermod -l $new_username $useredit
+                    usermod -l "$new_username" "$useredit"
                     echo "Username changed"
                     sleep 2
                     ;;
-                2) echo -n "Enter the new path : "
+                2) echo "Enter the new path : "
                     read new_path
-                    if [ -z $new_path ] && [ $new_path != " " ]; 
+                    if [ -z "$new_path" ] && [ "$new_path" != " " ]; 
                     then
                         echo "Path cannot be empty"
                         exit 0
                     else
-                        if [ -d /home/$new_path ]; 
+                        if [ -d /home/"$new_path" ]; 
                         then
                             echo "Path already exists"
                             exit 0
@@ -177,60 +179,62 @@ case $choice in
                     fi
                     # Change the path
                     echo "Changing path..."
-                    usermod -d $new_path $useredit
+                    usermod -d "$new_path" "$useredit"
                     echo "Path changed"
                     sleep 2
                     ;;
-                3) echo -n "Enter the new expiration date (YYYY-MM-DD) : "
+                3) echo "Enter the new expiration date (YYYY-MM-DD) : "
                     read new_expiration
-                    if [ -z $new_expiration ] && [ $new_expiration != " " ] &&  [ $new_expiration > ${date +%Y-%m-%d} ]; 
+                    if [ -z "$new_expiration" ] && [ "$new_expiration" != " " ] &&  [ "$new_expiration" > "${date +%Y-%m-%d}" ]; 
                     then
                         echo "Expiration date cannot be empty and must be greater than today's date"
                         exit 0
                     fi
                     # Change the expiration date
                     echo "Changing expiration date..."
-                    chage -n $new_expiration $useredit
+                    chage -n "$new_expiration" "$useredit"
                     echo "Expiration date changed"
                     sleep 2
                     ;;
-                4) echo -n "Enter the new password : "
-                    read -s -new_password
-                    if [ -z $new_password ] && [ $new_password != " " ] && [ ${#new_password} < 8 ]; 
+                4) echo "Enter the new password : "
+                    stty -echo
+                    read new_password
+                    stty echo
+                    if [ -z "$new_password" ] && [ "$new_password" != " " ] && [ ${#new_password} -lt 8 ]; 
                     then
                         echo "Password cannot be empty and must be at least 8 characters long"
                         exit 0
                     fi
                     # Change the password
                     echo "Changing password..."
-                    new_encrypted_password = $(openssl passwd -1 $password)
-                    usermod -p $new_encrypted_password $useredit
+                    new_encrypted_password=$(openssl passwd -1 "$password")
+                    usermod -p "$new_encrypted_password" "$useredit"
                     echo "Password changed"
                     sleep 2
                     ;;
-                5) echo -n "Enter the new shell : "
+                5) echo -r "Enter the new shell : "
                     read new_shell
-                    if [ -z $new_shell ] && [ $new_shell != " " ]; 
+                    if [ -z "$new_shell" ] && [ "$new_shell" != " " ]; 
                     then
                         echo "Shell cannot be empty."
                         exit 0
                     else
-                        if [ ${command -v $new_shell} ]; 
+                        if [ "${command -v $new_shell}" ]; 
                         then
                             continue
                         else
                             echo "Shell does not exist\n"
-                            echo -n "Do you want to install the shell ? (y/n) : "
+                            echo "Do you want to install the shell ? (y/n) : "
                             read install
-                            if [ $install == "y" ] || [ $install == "Y" ];
+                            if [ "$install" == "y" ] || [ "$install" == "Y" ];
                             then
                                 # we install the shell from the content of the 
                                 # shell variable
-                                sudo apt-get install $new_shell
+                                sudo apt-get install "$new_shell"
 
                                 echo "Installing $new_shell ..."
                                 sleep 2
-                                if [ ${command -v $new_shell} ]; 
+                                if [ "${command -v $new_shell}" ]; 
                                 then
                                     echo "Shell installed successfully"
                                 else
@@ -242,20 +246,20 @@ case $choice in
                     fi
                     # Change the shell
                     echo "Changing shell..."
-                    usermod -s $new_shell $useredit
+                    usermod -s "$new_shell" "$useredit"
                     echo "Shell changed"
                     sleep 2
                     ;;
-                6) echo -n "Enter the new userID : "
+                6) echo "Enter the new userID : "
                     read new_userID
-                    if [ -z $new_userID ] && [ $new_userID != " " ]; 
+                    if [ -z "$new_userID" ] && [ "$new_userID" != " " ]; 
                     then
                         echo "userID cannot be empty"
                         exit 0
                     fi
                     # Change the userID
                     echo "Changing userID..."
-                    usermod -u $new_userID $useredit
+                    usermod -u "$new_userID" "$useredit"
                     echo "userID changed"
                     sleep 2
                     ;;
@@ -271,22 +275,22 @@ case $choice in
     ;;
 
     # Erase a user
-    3) echo -n "Which existing user do you want to erase ? : "
-        read usererase
+    3) echo "Which existing user do you want to erase ? : "
+        read -r user_erase
         # if user exists
-        if [ -d /home/$usererase ]; 
+        if [ -d /home/"$user_erase" ]; 
         then
             echo "Are you sure you want to erase $erase_choice ? (y/n) :"
             read erase_choice
             case $erase_choice in
                 #we check if the user is logged in or if the user exist
-                y)  if ! [ -z $(who | grep $usererase) ] || [ -e /home/$usererase ];
+                y)  if [ -n $(who | grep q "$user_erase") ] || [ -e /home/"$user_erase" ];
                         # ask the user if he wants to delete the user folder
                         then echo "Do you want to delete the user folder ? (y/n) : "
-                            read folder_choice
+                            read -r folder_choice
                             case $folder_choice in
-                                y) echo "Deleting $erase_folder folder..."
-                                    rm -r /home/$usererase
+                                y) echo "Deleting $user_erase folder..."
+                                    rm -rf /home/"$user_erase"
                                     echo "User folder deleted"
                                     sleep 2
                                     ;;
@@ -296,13 +300,13 @@ case $choice in
                             esac
                             # delete the user
                             echo "Deleting user..."
-                            userdel -r $usererase
+                            userdel -r "$user_erase"
                             echo "User deleted"
                             sleep 2
                         else echo "$erase_choice is logged in"
                             # we force delete the user if he is logged in
                             echo "Force deleting $erase_choice ..."
-                            userdel -r -f $usererase
+                            userdel -r -f "$user_erase"
                             echo "User deleted"
                             sleep 2
                     fi
@@ -322,7 +326,6 @@ case $choice in
     # Exit
     4) exit ;;
     esac
-    echo -n "Press enter to continue ..."
-    read input
+    echo "Press enter to continue ..."
+    read -r input
 done
-
