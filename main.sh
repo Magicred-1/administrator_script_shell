@@ -23,7 +23,7 @@ case $choice in
     # To create a new user account we first check if the user already exists or if the input is empty
     1) echo -n "How many account do you want to be created ? :"
     read numberOfAccounts
-    for ((i=1; i <= $numberOfAccounts; i++))
+    for i in $(seq 1 $numberOfAccounts)
     do
         echo -n "Enter the username of the user number $i : "
         read username
