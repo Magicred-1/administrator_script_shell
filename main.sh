@@ -5,11 +5,9 @@ trap '' 2
 # Author: Djason G. (Magicred-1 on Github)
 while true
 do
-if [ "$EUID" -ne 0 ];
-  then 
-  echo "Please run as root"
-  sleep 2
-  exit
+if [ "$(id -u)" -ne 0 ]; then
+    echo 'This script must be run by root' >&2
+    exit 1
 fi
 clear
 echo "=========================================="
