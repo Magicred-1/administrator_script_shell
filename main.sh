@@ -5,8 +5,10 @@ trap '' 2
 # Author: Djason G. (Magicred-1 on Github)
 while true
 do
-if [ "$EUID" -ne 0 ]
-  then echo "Please run as root"
+if [ "$EUID" -ne 0 ];
+  then 
+  echo "Please run as root"
+  sleep 2
   exit
 fi
 clear
@@ -97,7 +99,7 @@ case $choice in
                     
                 fi
                 # We then create the user with a encrypted password
-                encrypted_password = $(openssl passwd -1 "$password")
+                encrypted_password=$(openssl passwd -1 "$password")
 
                 sudo useradd -d "$path" -n "$expiration" -s "/home/$shell" -p "$encrypted_password" "$username"
                 echo "User $username created successfully"
